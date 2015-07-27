@@ -97,6 +97,7 @@ public class BandTileEventAppActivity extends Activity {
         unregisterReceiver(messageReceiver);
     }
 
+    //This gives us the text on the phone
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
