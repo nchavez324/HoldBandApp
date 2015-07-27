@@ -16,7 +16,8 @@ public class HoldApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        // Enable Local Datastore.
+        //Starts Parse up
+
         Parse.enableLocalDatastore(this);
 
         Parse.initialize(this, HoldApplication.appId, HoldApplication.clientKey);
