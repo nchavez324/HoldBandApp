@@ -51,7 +51,9 @@ public class WearFragment extends Fragment {
 
     public void startWear(View v)
     {
-        Intent bandStreamIntent = new Intent(getActivity(), BandStreamingAppActivity.class);
-        startActivity(bandStreamIntent);
+        Intent bandTileIntent = new Intent(getActivity(), BandTileEventAppActivity.class);
+        startActivity(bandTileIntent);
+//        Intent bandStreamIntent = new Intent(getActivity(), BandStreamingAppActivity.class);
+//        startActivity(bandStreamIntent);
     }
 }

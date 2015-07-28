@@ -106,7 +106,16 @@ public class BandTileEventAppActivity extends Activity {
                 appendToUI("Tile open event received\n" + tileOpenData.toString()+ "\n\n");
             } else if (intent.getAction() == TileEvent.ACTION_TILE_BUTTON_PRESSED) {
                 TileButtonEvent buttonData = intent.getParcelableExtra(TileEvent.TILE_EVENT_DATA);
-                appendToUI("Button event received\n" + buttonData.toString()+ "\n\n");
+                if(buttonData.getElementID()==12) {
+                    appendToUI("Emergency button pressed.\n");
+                    //go into screen to for "calling authorities"
+                }
+                else if(buttonData.getElementID()==21)
+                {
+                    appendToUI("Pulse sent.\n");
+                    //notify that friends are being contacted
+                }
+//                appendToUI("Button event received\n" + buttonData.toString()+ "\n\n");
             } else if (intent.getAction() == TileEvent.ACTION_TILE_CLOSED) {
                 TileEvent tileCloseData = intent.getParcelableExtra(TileEvent.TILE_EVENT_DATA);
                 appendToUI("Tile close event received\n" + tileCloseData.toString()+ "\n\n");
@@ -198,17 +207,17 @@ public class BandTileEventAppActivity extends Activity {
 
     private PageLayout createButtonLayout() {
         return new PageLayout(
-                new FlowPanel(15, 0, 260, 105, FlowPanelOrientation.VERTICAL)
-                        .addElements(new FilledButton(0, 5, 210, 45).setMargins(0, 5, 0 ,0).setId(12).setBackgroundColor(Color.RED))
-                        .addElements(new TextButton(0, 0, 210, 45).setMargins(0, 5, 0 ,0).setId(21).setPressedColor(Color.BLUE))
+                new FlowPanel(15, 0, 260, 120, FlowPanelOrientation.HORIZONTAL)
+                        .addElements(new FilledButton(0, 0, 100, 100).setMargins(0, 5, 0 ,0).setId(12).setBackgroundColor(Color.RED))
+                        .addElements(new TextButton(0, 0, 100, 100).setMargins(0, 5, 0 ,0).setId(21).setPressedColor(Color.YELLOW))
         );
     }
 
     private void updatePages() throws BandIOException {
         client.getTileManager().setPages(tileId,
                 new PageData(pageId1, 0)
-                        .update(new FilledButtonData(12, Color.YELLOW))
-                        .update(new TextButtonData(21, "Text Button")));
+                        .update(new FilledButtonData(12, Color.WHITE))
+                        .update(new TextButtonData(21, "Pulse")));
         appendToUI("Send button page data to tile page \n\n");
     }
 
