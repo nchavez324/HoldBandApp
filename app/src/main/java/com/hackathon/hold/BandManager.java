@@ -40,7 +40,7 @@ import java.util.UUID;
 /**
  * Created by nick on 7/28/15.
  */
-public class BandInstaller {
+public class BandManager {
 
     private Activity mActivity;
     private BandClient client = null;
@@ -50,7 +50,7 @@ public class BandInstaller {
     private static final UUID tileId = UUID.fromString("cc0D508F-70A3-47D4-BBA3-812BADB1F8Aa");
     private static final UUID pageId1 = UUID.fromString("b1234567-89ab-cdef-0123-456789abcd00");
 
-    public BandInstaller(Activity activity)
+    public BandManager(Activity activity)
     {
         mActivity = activity;
     }
