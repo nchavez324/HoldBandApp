@@ -17,6 +17,7 @@ public class HoldApplication extends Application {
         super.onCreate();
 
         //Starts Parse up por favor
+        //Should be on wear
 
         Parse.enableLocalDatastore(this);
 
