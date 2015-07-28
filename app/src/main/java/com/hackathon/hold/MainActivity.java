@@ -73,21 +73,16 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction() == TileEvent.ACTION_TILE_OPENED) {
-                    TileEvent tileOpenData = intent.getParcelableExtra(TileEvent.TILE_EVENT_DATA);
-                    Log.d("band_console", "Tile open event received\n" + tileOpenData.toString() + "\n\n");
+
+                    mBandManager.onActionTileOpened(intent);
+
                 } else if (intent.getAction() == TileEvent.ACTION_TILE_BUTTON_PRESSED) {
-                    TileButtonEvent buttonData = intent.getParcelableExtra(TileEvent.TILE_EVENT_DATA);
-                    if(buttonData.getElementID()==12) {
-                        Log.d("band_console", "Emergency button pressed.\n");
-                    }
-                    else if(buttonData.getElementID()==21)
-                    {
-                        Log.d("band_console", "Pulse sent.\n");
-                        //notify that friends are being contacted
-                    }
+
+                    mBandManager.onActionTileButtonPressed(intent);
+
                 } else if (intent.getAction() == TileEvent.ACTION_TILE_CLOSED) {
-                    TileEvent tileCloseData = intent.getParcelableExtra(TileEvent.TILE_EVENT_DATA);
-                    Log.d("band_console", "Tile close event received\n" + tileCloseData.toString() + "\n\n");
+
+                    mBandManager.onActionTileClosed(intent);
                 }
             }
         };
