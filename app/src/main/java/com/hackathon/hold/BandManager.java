@@ -164,4 +164,29 @@ public class BandManager {
         Log.d("band_console", "Band is connecting...\n");
         return ConnectionState.CONNECTED == client.connect().await();
     }
+
+    public void onActionTileOpened(Intent intent)
+    {
+        TileEvent tileOpenData = intent.getParcelableExtra(TileEvent.TILE_EVENT_DATA);
+        Log.d("band_console", "Tile open event received\n" + tileOpenData.toString() + "\n\n");
+    }
+
+    public void onActionTileButtonPressed(Intent intent)
+    {
+        TileButtonEvent buttonData = intent.getParcelableExtra(TileEvent.TILE_EVENT_DATA);
+        if(buttonData.getElementID()==12) {
+            Log.d("band_console", "Emergency button pressed.\n");
+        }
+        else if(buttonData.getElementID()==21)
+        {
+            Log.d("band_console", "Pulse sent.\n");
+            //notify that friends are being contacted
+        }
+    }
+
+    public void onActionTileClosed(Intent intent)
+    {
+        TileEvent tileCloseData = intent.getParcelableExtra(TileEvent.TILE_EVENT_DATA);
+        Log.d("band_console", "Tile close event received\n" + tileCloseData.toString() + "\n\n");
+    }
 }
