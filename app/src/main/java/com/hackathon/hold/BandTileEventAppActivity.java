@@ -15,7 +15,7 @@
 //THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
 //CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //IN THE SOFTWARE.
-package com.hold.bandlayoutapp;
+package com.hackathon.hold;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -28,6 +28,7 @@ import android.view.View;
 import java.util.List;
 import java.util.UUID;
 
+import com.hold.bandlayoutapp.R;
 import com.microsoft.band.BandClient;
 import com.microsoft.band.BandClientManager;
 import com.microsoft.band.BandException;

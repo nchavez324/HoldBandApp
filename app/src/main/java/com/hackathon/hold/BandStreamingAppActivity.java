@@ -15,39 +15,32 @@
 //THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
 //CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //IN THE SOFTWARE.
-package com.hold.bandlayoutapp;
+package com.hackathon.hold;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
-import android.app.Activity;
-import android.os.Bundle;
-import android.view.View;
-
+import com.hold.bandlayoutapp.R;
 import com.microsoft.band.BandClient;
 import com.microsoft.band.BandClientManager;
 import com.microsoft.band.BandException;
 import com.microsoft.band.BandInfo;
 import com.microsoft.band.BandIOException;
 import com.microsoft.band.ConnectionState;
-import com.microsoft.band.notifications.MessageFlags;
-import com.microsoft.band.tiles.BandTile;
+import com.microsoft.band.sensors.BandAccelerometerEvent;
+import com.microsoft.band.sensors.BandAccelerometerEventListener;
+import com.microsoft.band.sensors.SampleRate;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.view.View;
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class BandNotificationAppActivity extends Activity {
+public class BandStreamingAppActivity extends Activity {
 
     private BandClient client = null;
     private Button btnStart;
     private TextView txtStatus;
-
-    private UUID tileId = UUID.fromString("aa0D508F-70A3-47D4-BBA3-812BADB1F8Aa");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +48,6 @@ public class BandNotificationAppActivity extends Activity {
         setContentView(R.layout.activity_band_start);
 
         txtStatus = (TextView) findViewById(R.id.txtStatus);
-
         btnStart = (Button) findViewById(R.id.btnStart);
         btnStart.setOnClickListener(new OnClickListener() {
             @Override
@@ -66,35 +58,42 @@ public class BandNotificationAppActivity extends Activity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        txtStatus.setText("");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (client != null) {
+            try {
+                client.getSensorManager().unregisterAccelerometerEventListeners();
+            } catch (BandIOException e) {
+                appendToUI(e.getMessage());
+            }
+        }
+    }
+
     private class appTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             try {
                 if (getConnectedBandClient()) {
-                    if (doesTileExist(client.getTileManager().getTiles().await(), tileId)) {
-                        sendMessage("Send message to existing message tile");
-                    } else {
-                        if(addTile()) {
-                            sendMessage("Send message to new message tile");
-                        }
-                    }
+                    appendToUI("Band is connected.\n");
+                    client.getSensorManager().registerAccelerometerEventListener(mAccelerometerEventListener, SampleRate.MS128);
                 } else {
                     appendToUI("Band isn't connected. Please make sure bluetooth is on and the band is in range.\n");
                 }
             } catch (BandException e) {
                 String exceptionMessage="";
                 switch (e.getErrorType()) {
-                    case DEVICE_ERROR:
-                        exceptionMessage = "Please make sure bluetooth is on and the band is in range.";
-                        break;
                     case UNSUPPORTED_SDK_VERSION_ERROR:
                         exceptionMessage = "Microsoft Health BandService doesn't support your SDK Version. Please update to latest SDK.";
                         break;
                     case SERVICE_ERROR:
                         exceptionMessage = "Microsoft Health BandService is not available. Please make sure Microsoft Health is installed and that you have the correct permissions.";
-                        break;
-                    case BAND_FULL_ERROR:
-                        exceptionMessage = "Band is full. Please use Microsoft Health to remove a tile.";
                         break;
                     default:
                         exceptionMessage = "Unknown error occured: " + e.getMessage();
@@ -113,44 +112,20 @@ public class BandNotificationAppActivity extends Activity {
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                txtStatus.append(string);
+                txtStatus.setText(string);
             }
         });
     }
 
-    private boolean doesTileExist(List<BandTile> tiles, UUID tileId) {
-        for (BandTile tile:tiles) {
-            if (tile.getTileId().equals(tileId)) {
-                return true;
+    private BandAccelerometerEventListener mAccelerometerEventListener = new BandAccelerometerEventListener() {
+        @Override
+        public void onBandAccelerometerChanged(final BandAccelerometerEvent event) {
+            if (event != null) {
+                appendToUI(String.format(" X = %.3f \n Y = %.3f\n Z = %.3f", event.getAccelerationX(),
+                        event.getAccelerationY(), event.getAccelerationZ()));
             }
         }
-        return false;
-    }
-
-    private boolean addTile() throws Exception {
-        /* Set the options */
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inScaled = false;
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap tileIcon = BitmapFactory.decodeResource(getBaseContext().getResources(), R.raw.tile_icon_large, options);
-        Bitmap badgeIcon = BitmapFactory.decodeResource(getBaseContext().getResources(), R.raw.tile_icon_small, options);
-
-        BandTile tile = new BandTile.Builder(tileId, "MessageTile", tileIcon)
-                .setTileSmallIcon(badgeIcon).build();
-        appendToUI("Message Tile is adding ...\n");
-        if (client.getTileManager().addTile(this, tile).await()) {
-            appendToUI("Message Tile is added.\n");
-            return true;
-        } else {
-            appendToUI("Unable to add message tile to the band.\n");
-            return false;
-        }
-    }
-
-    private void sendMessage(String message) throws BandIOException {
-        client.getNotificationManager().sendMessage(tileId, "Tile Message", message, new Date(), MessageFlags.SHOW_DIALOG);
-        appendToUI(message + "\n");
-    }
+    };
 
     private boolean getConnectedBandClient() throws InterruptedException, BandException {
         if (client == null) {
