@@ -73,10 +73,10 @@ public class BandNotificationAppActivity extends Activity {
             try {
                 if (getConnectedBandClient()) {
                     if (doesTileExist(client.getTileManager().getTiles().await(), tileId)) {
-                        sendMessage("Send message to existing message tile");
+                        sendMessage("Message tile already created!");
                     } else {
                         if(addTile()) {
-                            sendMessage("Send message to new message tile");
+                            sendMessage("This is a new message tile.");
                         }
                     }
                 } else {

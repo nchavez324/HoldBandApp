@@ -2,6 +2,10 @@ package com.hackathon.hold;
 
 import java.util.Locale;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -10,10 +14,14 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.hold.bandlayoutapp.R;
+import com.microsoft.band.tiles.TileButtonEvent;
+import com.microsoft.band.tiles.TileEvent;
 
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
@@ -34,6 +42,32 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
+
+    private BandInstaller mBandInstaller;
+
+    //This gives us the text on the phone
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction() == TileEvent.ACTION_TILE_OPENED) {
+                TileEvent tileOpenData = intent.getParcelableExtra(TileEvent.TILE_EVENT_DATA);
+                Log.d("band_console", "Tile open event received\n" + tileOpenData.toString() + "\n\n");
+            } else if (intent.getAction() == TileEvent.ACTION_TILE_BUTTON_PRESSED) {
+                TileButtonEvent buttonData = intent.getParcelableExtra(TileEvent.TILE_EVENT_DATA);
+                if(buttonData.getElementID()==12) {
+                    Log.d("band_console", "Emergency button pressed.\n");
+                }
+                else if(buttonData.getElementID()==21)
+                {
+                    Log.d("band_console", "Pulse sent.\n");
+                    //notify that friends are being contacted
+                }
+            } else if (intent.getAction() == TileEvent.ACTION_TILE_CLOSED) {
+                TileEvent tileCloseData = intent.getParcelableExtra(TileEvent.TILE_EVENT_DATA);
+                Log.d("band_console", "Tile close event received\n" + tileCloseData.toString() + "\n\n");
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,13 +109,23 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
+
+        mBandInstaller = new BandInstaller(this);
+    }
+
+    public void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(TileEvent.ACTION_TILE_OPENED);
+        filter.addAction(TileEvent.ACTION_TILE_BUTTON_PRESSED);
+        filter.addAction(TileEvent.ACTION_TILE_CLOSED);
+        registerReceiver(mMessageReceiver, filter);
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mMessageReceiver);
     }
 
     @Override
@@ -104,6 +148,11 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onInstallApp(View v)
+    {
+        mBandInstaller.installApp();
     }
 
     @Override
@@ -135,10 +184,17 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            if (position == 1)
-                return WearFragment.newInstance();
-            else
-                return PlaceholderFragment.newInstance(position + 1);
+            switch(position){
+
+                case 0:
+                    return WatchFragment.newInstance(MainActivity.this);
+                case 1:
+                    return WearFragment.newInstance(MainActivity.this);
+                case 2:
+                    return SettingsFragment.newInstance(MainActivity.this);
+                default:
+                    return null;
+            }
         }
 
         @Override

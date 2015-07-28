@@ -32,6 +32,12 @@
         </activity>
         <activity android:name="com.hackathon.hold.BandStreamingAppActivity" >
         </activity>
+        <activity android:name="com.hackathon.hold.BandNotificationAppActivity" >
+        </activity>
+        <activity android:name="com.hackathon.hold.BandLayoutAppActivity" >
+        </activity>
+        <activity android:name="com.hackathon.hold.BandTileEventAppActivity" >
+        </activity>
     </application>
 
 </manifest>
