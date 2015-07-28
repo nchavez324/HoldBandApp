@@ -26,7 +26,6 @@ import android.view.View;
 
 import com.microsoft.band.BandClient;
 import com.microsoft.band.BandClientManager;
-import com.microsoft.band.BandErrorType;
 import com.microsoft.band.BandException;
 import com.microsoft.band.BandInfo;
 import com.microsoft.band.BandIOException;
@@ -64,7 +63,7 @@ public class BandLayoutAppActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_band_start);
 
         txtStatus = (TextView) findViewById(R.id.txtStatus);
 

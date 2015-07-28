@@ -39,7 +39,6 @@ import com.microsoft.band.tiles.TileButtonEvent;
 import com.microsoft.band.tiles.TileEvent;
 import com.microsoft.band.tiles.pages.FlowPanel;
 import com.microsoft.band.tiles.pages.FlowPanelOrientation;
-import com.microsoft.band.tiles.pages.ElementColorSource;
 import com.microsoft.band.tiles.pages.PageData;
 import com.microsoft.band.tiles.pages.PageLayout;
 import com.microsoft.band.tiles.pages.FilledButtonData;
@@ -67,7 +66,7 @@ public class BandTileEventAppActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_band_start);
 
         txtStatus = (TextView) findViewById(R.id.txtStatus);
 
