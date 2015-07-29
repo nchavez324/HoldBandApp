@@ -41,6 +41,7 @@ public class WearFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_wear, container, false);
 
+
         return rootView;
     }
 

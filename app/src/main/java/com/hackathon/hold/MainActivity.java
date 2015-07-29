@@ -16,6 +16,10 @@ import android.view.View;
 import com.hold.bandlayoutapp.R;
 import com.microsoft.band.tiles.TileButtonEvent;
 import com.microsoft.band.tiles.TileEvent;
+import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
+import com.parse.SaveCallback;
 
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
@@ -141,6 +145,21 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    }
+
+    public void onPulse(){
+        ParseObject pulseObject = new ParseObject("Pulse");
+
+        //collect GPS and location data, send to parse
+        ParseGeoPoint point = new ParseGeoPoint(40.0, -30.0);
+        pulseObject.put("location",point);
+        pulseObject.put("time", System.currentTimeMillis());
+        pulseObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                Log.e("band_console", (e==null)?"pulse saved":"pulse failed");
+            }
+        });
     }
 
 

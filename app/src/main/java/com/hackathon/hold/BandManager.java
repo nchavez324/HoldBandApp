@@ -39,7 +39,7 @@ import java.util.UUID;
  */
 public class BandManager {
 
-    private Activity mActivity;
+    private MainActivity mActivity;
     private BandClient client = null;
 
     private static final UUID tileId = UUID.fromString("cc0D508F-70A3-47D4-BBA3-812BADB1F8Aa");
@@ -65,7 +65,7 @@ public class BandManager {
     };
 
 
-    public BandManager(Activity activity)
+    public BandManager(MainActivity activity)
     {
         mActivity = activity;
     }
@@ -251,6 +251,7 @@ public class BandManager {
         {
             Log.d("band_console", "Pulse sent.\n");
             //notify that friends are being contacted
+            mActivity.onPulse();
 
         }
     }
