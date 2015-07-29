@@ -22,9 +22,11 @@ import com.google.android.gms.location.LocationServices;
 import com.hold.bandlayoutapp.R;
 import com.microsoft.band.tiles.TileButtonEvent;
 import com.microsoft.band.tiles.TileEvent;
+import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.HashMap;
@@ -70,9 +72,26 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         mBandManager = new BandManager(this);
 
         buildGoogleApiClient();
+        userSignIn();
+
     }
 
-
+    public void userSignIn(){
+        ParseUser user = new ParseUser();
+        user.setUsername("ishandon");
+        user.setPassword("qwert");
+        user.logInInBackground("ishandon", "qwert", new LogInCallback() {
+            @Override
+            public void done(ParseUser parseUser, ParseException e) {
+                if(parseUser==null){
+                    Log.d("console_band", "could not sign in");
+                }
+                else{
+                    Log.d("console_band", "signed in");
+                }
+            }
+        });
+    }
     public void onResume() {
         super.onResume();
 
