@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="activity_logout">Logout</string>
+    <string name="activity_save">Save</string>
 </resources>

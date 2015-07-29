@@ -219,7 +219,7 @@ public class LoginActivity extends Activity {
                             } else {
                                 Toast.makeText(
                                         getApplicationContext(),
-                                        "No such user exist, please sign up.",
+                                        "Incorrect login credentials.",
                                         Toast.LENGTH_LONG).show();
                             }
                             showProgress(false);
