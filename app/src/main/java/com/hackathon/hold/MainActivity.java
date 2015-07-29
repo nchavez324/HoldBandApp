@@ -337,5 +337,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         // Send haptic tone to band
         Log.d("m", "");
+        mBandManager.sendSqueeze();
     }
 }

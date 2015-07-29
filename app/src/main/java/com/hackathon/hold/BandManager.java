@@ -15,6 +15,7 @@ import com.microsoft.band.BandException;
 import com.microsoft.band.BandIOException;
 import com.microsoft.band.BandInfo;
 import com.microsoft.band.ConnectionState;
+import com.microsoft.band.notifications.VibrationType;
 import com.microsoft.band.tiles.BandTile;
 import com.microsoft.band.tiles.TileButtonEvent;
 import com.microsoft.band.tiles.TileEvent;
@@ -187,9 +188,9 @@ public class BandManager {
                                     .setPressedColor(Color.YELLOW),
 
                             new FilledButton(0, 0, 180, 100)
-                                .setMargins(0, 0, 0, 0)
-                                .setId(VIEW_ID.EMERGENCY.getId())
-                                .setBackgroundColor(Color.RED)
+                                    .setMargins(0, 0, 0, 0)
+                                    .setId(VIEW_ID.EMERGENCY.getId())
+                                    .setBackgroundColor(Color.RED)
                     )
         );
     }
@@ -260,5 +261,22 @@ public class BandManager {
     {
         TileEvent tileCloseData = intent.getParcelableExtra(TileEvent.TILE_EVENT_DATA);
         Log.d("band_console", "Tile close event received\n" + tileCloseData.toString() + "\n\n");
+    }
+
+    public void sendSqueeze()
+    {   if(client==null){
+            Log.d("client_band", "client is null");
+        }
+        if(client.getNotificationManager()==null){
+            Log.d("client_band", "notification manager is null");
+        }
+        try {
+            client.getNotificationManager().vibrate(VibrationType.NOTIFICATION_ALARM).await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (BandException e) {
+            e.printStackTrace();
+        }
+
     }
 }
