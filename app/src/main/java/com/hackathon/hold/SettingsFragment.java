@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -31,7 +32,9 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
@@ -74,15 +77,9 @@ public class SettingsFragment extends Fragment {
             imgUrl = ((ParseFile) user.get("imgFile")).getUrl();
         }
         catch (Exception e) {}
-
-        try {
-            ImageView i = (ImageView)rootView.findViewById(R.id.settings_imageButton);
-            Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(imgUrl).getContent());
-            i.setImageBitmap(bitmap);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ImageView i = (ImageView)rootView.findViewById(R.id.settings_imageButton);
+        i.setTag(imgUrl);
+        new DownloadImagesTask().execute(i);
 
 
         try {
@@ -168,6 +165,42 @@ public class SettingsFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+
+    public class DownloadImagesTask extends AsyncTask<ImageView, Void, Bitmap> {
+        ImageView imageView = null;
+        @Override
+        protected Bitmap doInBackground(ImageView... imageViews) {
+            this.imageView = imageViews[0];
+            return download_Image((String)imageView.getTag());
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            imageView.setImageBitmap(result);              // how do I pass a reference to mChart here ?
+        }
+
+
+        private Bitmap download_Image(String src) {
+            try {
+                Log.e("src",src);
+                URL url = new URL(src);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                InputStream input = connection.getInputStream();
+                Bitmap myBitmap = BitmapFactory.decodeStream(input);
+                Log.e("Bitmap","returned");
+                return myBitmap;
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("Exception",e.getMessage());
+                return null;
+            }
+        }
+
+
     }
 
 

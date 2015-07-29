@@ -22,7 +22,8 @@
                 android:layout_height="99dp"
                 android:id="@+id/watch_imageView"
                 android:layout_row="1"
-                android:layout_column="0" />
+                android:layout_column="0"
+                android:layout_margin="7dp" />
 
             <LinearLayout
                 android:orientation="vertical"
@@ -70,16 +71,19 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true" />
 
-            <WebView
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/mapView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/webView"
                 android:layout_row="3"
                 android:layout_column="0"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="0dp"
                 android:layout_alignParentTop="true"
                 android:layout_marginTop="0dp" />
+
+
+
 
         </RelativeLayout>
 
