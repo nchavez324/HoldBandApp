@@ -1,7 +1,15 @@
 package com.hackathon.hold;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.Context;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,17 +17,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hold.bandlayoutapp.R;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -54,6 +67,24 @@ public class SettingsFragment extends Fragment {
 
         // auto fill out the items
         ParseUser user = ParseUser.getCurrentUser();
+
+
+        String imgUrl = "http://www.muttsbetter.com/gallery/lilybefore.JPG";
+        try {
+            imgUrl = ((ParseFile) user.get("imgFile")).getUrl();
+        }
+        catch (Exception e) {}
+
+        try {
+            ImageView i = (ImageView)rootView.findViewById(R.id.settings_imageButton);
+            Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(imgUrl).getContent());
+            i.setImageBitmap(bitmap);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         try {
             ((EditText) rootView.findViewById(R.id.settings_email)).setText(user.get("email").toString(), TextView.BufferType.EDITABLE);
         } catch( Exception e) {
@@ -69,7 +100,7 @@ public class SettingsFragment extends Fragment {
             ((EditText) rootView.findViewById(R.id.settings_phone)).setText(user.get("phone").toString(), TextView.BufferType.EDITABLE);
         }
         catch (Exception e) {
-            ((EditText) rootView.findViewById(R.id.settings_phone)).setText("", TextView.BufferType.EDITABLE);
+            ((EditText) rootView.findViewById(R.id.settings_phone)).setText("Phone", TextView.BufferType.EDITABLE);
         }
 
 
@@ -126,7 +157,58 @@ public class SettingsFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        ImageButton mImageButton = (ImageButton) rootView.findViewById(R.id.settings_imageButton);
+        mImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivityForResult(new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI), 1);
+
+            }
+        });
+
         return rootView;
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            // When an Image is picked
+            if (requestCode == 1 && resultCode == Activity.RESULT_OK
+                    && null != data) {
+                // Get the Image from data
+
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+                // Get the cursor
+                Cursor cursor = getActivity().getContentResolver().query(selectedImage,
+                        filePathColumn, null, null, null);
+                // Move to first row
+                cursor.moveToFirst();
+
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String imgDecodableString = cursor.getString(columnIndex);
+                cursor.close();
+
+                ImageButton i = (ImageButton) getView().findViewById(R.id.settings_imageButton);
+                i.setImageBitmap(BitmapFactory
+                        .decodeFile(imgDecodableString));
+
+                Toast.makeText(getActivity(),"Under construction!", Toast.LENGTH_LONG)
+                        .show();
+
+            } else {
+                Toast.makeText(getActivity(),"You did not pick an image.", Toast.LENGTH_LONG)
+                        .show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(getActivity(),"Something went wrong", Toast.LENGTH_LONG)
+                    .show();
+        }
+
     }
 
     public void setMainActivity(MainActivity mainActivity)

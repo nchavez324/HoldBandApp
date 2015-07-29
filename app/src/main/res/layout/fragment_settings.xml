@@ -10,7 +10,15 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/settings_layout">
+        android:id="@+id/settings_layout"
+        android:weightSum="1">
+
+        <ImageButton
+            android:layout_width="181dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/settings_imageButton"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0.56" />
 
         <EditText
             android:layout_width="match_parent"
@@ -46,6 +54,7 @@
             android:layout_height="wrap_content"
             android:text="@string/activity_logout"
             android:id="@+id/settings_logout" />
+
     </LinearLayout>
 
 </RelativeLayout>

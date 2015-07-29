@@ -6,57 +6,83 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.hackathon.hold.WatchFragment">
 
-    <GridLayout
+    <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:weightSum="1"
-        android:id="@+id/gridLayout"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:layout_width="99dp"
-            android:layout_height="99dp"
-            android:id="@+id/imageView"
-            android:layout_row="1"
-            android:layout_column="0" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/gridLayout">
 
-        <WebView
+            <ImageView
+                android:layout_width="99dp"
+                android:layout_height="99dp"
+                android:id="@+id/watch_imageView"
+                android:layout_row="1"
+                android:layout_column="0" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="92dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="No Name"
+                    android:id="@+id/watch_name"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignEnd="@+id/gridLayout" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="No Phone Number"
+                    android:id="@+id/watch_phone"
+                    android:layout_alignEnd="@+id/gridLayout"
+                    android:layout_below="@+id/textView" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/webView"
-            android:layout_row="3"
-            android:layout_column="0" />
+            android:weightSum="1"
+            android:id="@+id/gridLayout"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true">
 
-    </GridLayout>
+            <Button
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:text="Emergency"
+                android:id="@+id/button"
+                android:layout_row="24"
+                android:layout_column="1"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="98dp"
-        android:text="Emergency"
-        android:id="@+id/button"
-        android:layout_row="24"
-        android:layout_column="1"
-        android:layout_alignParentBottom="true"
-        android:layout_alignEnd="@+id/gridLayout" />
+            <WebView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/webView"
+                android:layout_row="3"
+                android:layout_column="0"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="0dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="0dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Julia Wu"
-        android:id="@+id/textView"
-        android:layout_alignParentTop="true"
-        android:layout_alignEnd="@+id/gridLayout" />
+        </RelativeLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="908-528-7301"
-        android:id="@+id/textView2"
-        android:layout_alignEnd="@+id/gridLayout"
-        android:layout_below="@+id/textView" />
+    </LinearLayout>
 
 </RelativeLayout>
