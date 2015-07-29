@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentTransaction;
@@ -22,7 +23,9 @@ import com.google.android.gms.location.LocationServices;
 import com.hold.bandlayoutapp.R;
 import com.microsoft.band.tiles.TileButtonEvent;
 import com.microsoft.band.tiles.TileEvent;
+import com.parse.FunctionCallback;
 import com.parse.LogInCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -56,9 +59,13 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     //This gives us the text on the phone
     private BroadcastReceiver mMessageReceiver;
+    private BroadcastReceiver mLocalReceiver;
     private LocationRequest mLocationRequest;
     private boolean isClientBuilt = false;
     private boolean mAlreadyRequesting = false;
+
+    public static String ON_WATCHER_RESPONSE = "ON_WATCHER_RESPONSE";
+    public static String ON_PULSE_OPENED = "ON_PULSE_OPENED";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +73,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         setContentView(R.layout.activity_main);
 
         mMessageReceiver = getBandBroadcastReceiver();
+        mLocalReceiver = getLocalBroadcastReceiver();
 
         setUpUI();
 
@@ -83,10 +91,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         user.logInInBackground("ishandon", "qwert", new LogInCallback() {
             @Override
             public void done(ParseUser parseUser, ParseException e) {
-                if(parseUser==null){
+                if (parseUser == null) {
                     Log.d("console_band", "could not sign in");
-                }
-                else{
+                } else {
                     Log.d("console_band", "signed in");
                 }
             }
@@ -96,13 +103,13 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         super.onResume();
 
         Intent startIntent = getIntent();
-
-        String pulseSenderId = startIntent.getStringExtra("user_id");
-        if (pulseSenderId != null)
+        if (startIntent.getAction().equals(MainActivity.ON_WATCHER_RESPONSE))
         {
-            mViewPager.setCurrentItem(0);
-            WatchFragment watchFrag = (WatchFragment)mSectionsPagerAdapter.getItem(0);
-            watchFrag.onGetUserId(pulseSenderId);
+            onWatcherResponse(startIntent.getStringExtra("user_id"));
+        }
+        else if (startIntent.getAction().equals(MainActivity.ON_PULSE_OPENED))
+        {
+           onPulseOpened(startIntent.getStringExtra("user_id"));
         }
 
         IntentFilter filter = new IntentFilter();
@@ -110,6 +117,13 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         filter.addAction(TileEvent.ACTION_TILE_BUTTON_PRESSED);
         filter.addAction(TileEvent.ACTION_TILE_CLOSED);
         registerReceiver(mMessageReceiver, filter);
+
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
+
+        IntentFilter localFilter = new IntentFilter();
+        localFilter.addAction(MainActivity.ON_PULSE_OPENED);
+        localFilter.addAction(MainActivity.ON_WATCHER_RESPONSE);
+        localBroadcastManager.registerReceiver(mLocalReceiver, localFilter);
     }
 
     @Override
@@ -124,7 +138,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-                mGoogleApiClient.connect();
+        mGoogleApiClient.connect();
     }
 
 
@@ -179,11 +193,42 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     }
 
+    private BroadcastReceiver getLocalBroadcastReceiver()
+    {
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                Log.d("action_received", intent.getAction());
+
+                if (intent.getAction() == MainActivity.ON_PULSE_OPENED) {
+
+                    String pulseSenderUserId = intent.getStringExtra("user_id");
+                    if (pulseSenderUserId != null)
+                    {
+                        onPulseOpened(pulseSenderUserId);
+                    }
+
+                } else if (intent.getAction() == MainActivity.ON_WATCHER_RESPONSE) {
+
+                    String watcherUserId = intent.getStringExtra("user_id");
+                    if (watcherUserId != null)
+                    {
+                        onWatcherResponse(watcherUserId);
+                    }
+                }
+            }
+        };
+    }
+
     private BroadcastReceiver getBandBroadcastReceiver()
     {
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+
+                Log.d("action_received", intent.getAction());
+
                 if (intent.getAction() == TileEvent.ACTION_TILE_OPENED) {
 
                     mBandManager.onActionTileOpened(intent);
@@ -269,5 +314,28 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
+    }
+
+    public void onPulseOpened(String pulseSenderUserId) {
+
+        // Scroll to map tab
+        mViewPager.setCurrentItem(0, true);
+
+        //do things with user id of pulse sender
+
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        ParseCloud.callFunctionInBackground("onWatch", params, new FunctionCallback<Boolean>() {
+            public void done(Boolean success, ParseException e) {
+                if (e == null) {
+                    // ratings is 4.5
+                }
+            }
+        });
+    }
+
+    public void onWatcherResponse(String watcherUserId) {
+
+        // Send haptic tone to band
+        Log.d("m", "");
     }
 }
