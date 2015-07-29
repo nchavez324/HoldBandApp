@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Location;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentTransaction;
@@ -13,6 +14,11 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.hold.bandlayoutapp.R;
 import com.microsoft.band.tiles.TileButtonEvent;
 import com.microsoft.band.tiles.TileEvent;
@@ -21,8 +27,11 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.SaveCallback;
 
+import java.util.HashMap;
+import java.util.Queue;
 
-public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
+
+public class MainActivity extends ActionBarActivity implements ActionBar.TabListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -40,9 +49,14 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     ViewPager mViewPager;
 
     private BandManager mBandManager;
+    private GoogleApiClient mGoogleApiClient;
+    private HashMap<Long, Location> mLocations;
 
     //This gives us the text on the phone
     private BroadcastReceiver mMessageReceiver;
+    private LocationRequest mLocationRequest;
+    private boolean isClientBuilt = false;
+    private boolean mAlreadyRequesting = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +68,10 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         setUpUI();
 
         mBandManager = new BandManager(this);
+
+        buildGoogleApiClient();
     }
+
 
     public void onResume() {
         super.onResume();
@@ -69,6 +86,66 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mMessageReceiver);
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+
+    protected LocationRequest createLocationRequest() {
+
+        LocationRequest locRequest = new LocationRequest();
+        locRequest.setInterval(1000);
+        locRequest.setFastestInterval(100);
+        locRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        return locRequest;
+    }
+
+    protected void startLocationUpdates() {
+
+        if (!mAlreadyRequesting && isClientBuilt)
+        {
+            mAlreadyRequesting = true;
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    mGoogleApiClient, mLocationRequest, this);
+        }
+    }
+
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
+        mAlreadyRequesting = false;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+        stopLocationUpdates();
+
+        ParseObject pulseObject = new ParseObject("Pulse");
+        //collect GPS and location data, send to parse
+        ParseGeoPoint point = new ParseGeoPoint(location.getLatitude(), location.getLongitude());
+        pulseObject.put("location",point);
+        pulseObject.put("time", System.currentTimeMillis());
+        pulseObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                Log.e("band_console", (e == null) ? "pulse saved" : "pulse failed");
+            }
+        });
+    }
+
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        isClientBuilt = true;
+
     }
 
     private BroadcastReceiver getBandBroadcastReceiver()
@@ -148,19 +225,18 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     }
 
     public void onPulse(){
-        ParseObject pulseObject = new ParseObject("Pulse");
 
-        //collect GPS and location data, send to parse
-        ParseGeoPoint point = new ParseGeoPoint(40.0, -30.0);
-        pulseObject.put("location",point);
-        pulseObject.put("time", System.currentTimeMillis());
-        pulseObject.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                Log.e("band_console", (e==null)?"pulse saved":"pulse failed");
-            }
-        });
+
+        mLocationRequest = createLocationRequest();
+        startLocationUpdates();
+
     }
 
+    @Override
+    public void onConnectionSuspended(int i) {
+    }
 
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+    }
 }
