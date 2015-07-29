@@ -75,6 +75,17 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     public void onResume() {
         super.onResume();
+
+        Intent startIntent = getIntent();
+
+        String pulseSenderId = startIntent.getStringExtra("user_id");
+        if (pulseSenderId != null)
+        {
+            mViewPager.setCurrentItem(0);
+            WatchFragment watchFrag = (WatchFragment)mSectionsPagerAdapter.getItem(0);
+            watchFrag.onGetUserId(pulseSenderId);
+        }
+
         IntentFilter filter = new IntentFilter();
         filter.addAction(TileEvent.ACTION_TILE_OPENED);
         filter.addAction(TileEvent.ACTION_TILE_BUTTON_PRESSED);
