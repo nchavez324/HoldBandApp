@@ -116,6 +116,45 @@ public class BandManager {
         }
     }
 
+    private class vibrateTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                if (getConnectedBandClient()) {
+                    Log.d("band_console", "Band is connected.\n");
+
+                    client.getNotificationManager().vibrate(VibrationType.NOTIFICATION_ALARM).await();
+                } else {
+                    Log.d("band_console", "Band isn't connected. Please make sure bluetooth is on and the band is in range.\n");
+                }
+            } catch (BandException e) {
+                String exceptionMessage="";
+                switch (e.getErrorType()) {
+                    case DEVICE_ERROR:
+                        exceptionMessage = "Please make sure bluetooth is on and the band is in range.";
+                        break;
+                    case UNSUPPORTED_SDK_VERSION_ERROR:
+                        exceptionMessage = "Microsoft Health BandService doesn't support your SDK Version. Please update to latest SDK.";
+                        break;
+                    case SERVICE_ERROR:
+                        exceptionMessage = "Microsoft Health BandService is not available. Please make sure Microsoft Health is installed and that you have the correct permissions.";
+                        break;
+                    case BAND_FULL_ERROR:
+                        exceptionMessage = "Band is full. Please use Microsoft Health to remove a tile.";
+                        break;
+                    default:
+                        exceptionMessage = "Unknown error occured: " + e.getMessage();
+                        break;
+                }
+                Log.d("band_console", exceptionMessage);
+
+            } catch (Exception e) {
+                Log.d("band_console", e.getMessage());
+            }
+            return null;
+        }
+    }
+
     private boolean doesTileExist(List<BandTile> tiles, UUID tileId) {
 
         for (BandTile tile:tiles) {
@@ -264,19 +303,7 @@ public class BandManager {
     }
 
     public void sendSqueeze()
-    {   if(client==null){
-            Log.d("client_band", "client is null");
-        }
-        if(client.getNotificationManager()==null){
-            Log.d("client_band", "notification manager is null");
-        }
-        try {
-            client.getNotificationManager().vibrate(VibrationType.NOTIFICATION_ALARM).await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (BandException e) {
-            e.printStackTrace();
-        }
-
+    {
+        new vibrateTask().execute();
     }
 }
