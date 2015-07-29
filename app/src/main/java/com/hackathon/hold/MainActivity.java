@@ -94,14 +94,15 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+                mGoogleApiClient.connect();
     }
 
 
     protected LocationRequest createLocationRequest() {
 
         LocationRequest locRequest = new LocationRequest();
-        locRequest.setInterval(1000);
-        locRequest.setFastestInterval(100);
+        locRequest.setInterval(3000);
+        locRequest.setFastestInterval(1000);
         locRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         return locRequest;
