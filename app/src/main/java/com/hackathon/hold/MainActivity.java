@@ -12,10 +12,12 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.hold.bandlayoutapp.R;
 import com.microsoft.band.tiles.TileButtonEvent;
 import com.microsoft.band.tiles.TileEvent;
+import com.parse.ParseUser;
 
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
@@ -42,14 +44,30 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+            super.onCreate(savedInstanceState);
+        // Send logged in users to UI
         setContentView(R.layout.activity_main);
-
         mMessageReceiver = getBandBroadcastReceiver();
-
         setUpUI();
-
         mBandManager = new BandManager(this);
+
+                // Get current user data from Parse.com
+                ParseUser currentUser = ParseUser.getCurrentUser();
+                if (currentUser != null) {
+                    Toast.makeText(getApplicationContext(),
+                            "Welcome, "+ currentUser.getUsername(), Toast.LENGTH_LONG)
+                            .show();
+
+                } else {
+                    // Send user to LoginSignupActivity.class
+                    Intent intent = new Intent(MainActivity.this,
+                            LoginActivity.class);
+                    startActivity(intent);
+                }
+
+
+
+
     }
 
     public void onResume() {

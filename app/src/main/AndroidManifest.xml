@@ -15,6 +15,11 @@
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
 
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <application
         android:name="com.hackathon.hold.HoldApplication"
         android:allowBackup="true"
@@ -37,6 +42,11 @@
         <activity android:name="com.hackathon.hold.BandLayoutAppActivity" >
         </activity>
         <activity android:name="com.hackathon.hold.BandTileEventAppActivity" >
+        </activity>
+        <activity
+            android:name="com.hackathon.hold.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
     </application>
 

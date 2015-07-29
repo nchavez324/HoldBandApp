@@ -1,12 +1,15 @@
 package com.hackathon.hold;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.hold.bandlayoutapp.R;
+import com.parse.ParseUser;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -38,7 +41,16 @@ public class SettingsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_settings, container, false);
 
-
+        Button mLogoutButton = (Button) rootView.findViewById(R.id.settings_logout);
+        mLogoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ParseUser.logOut();
+                Intent intent = new Intent(getActivity(),
+                        LoginActivity.class);
+                startActivity(intent);
+            }
+        });
         return rootView;
     }
 
