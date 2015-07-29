@@ -3,12 +3,11 @@ package com.hackathon.hold;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,22 +15,22 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hold.bandlayoutapp.R;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -47,24 +46,9 @@ public class WatchFragment extends Fragment {
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    MapView mapView;
-    GoogleMap map;
-    LatLng CENTER = null;
 
-    public LocationManager locationManager;
-
-    double longitudeDouble;
-    double latitudeDouble;
-
-    String snippet;
-    String title;
-    Location location;
-    String myAddress;
-
-    String LocationId;
-    String CityName;
-    String imageURL;
-
+    MapView mMapView;
+    private GoogleMap googleMap;
     private MainActivity mMainActivity;
 
     /**
@@ -111,13 +95,71 @@ public class WatchFragment extends Fragment {
         new DownloadImagesTask().execute(i);
 
 
-//        mapView = (MapView) rootView.findViewById(R.id.mapView);
-//        mapView.onCreate(savedInstanceState);
-//
-//        setMapView();
+        // map stuff
+        mMapView = (MapView) rootView.findViewById(R.id.watch_mapView);
+        mMapView.onCreate(savedInstanceState);
+
+        mMapView.onResume();// needed to get the map to display immediately
+
+        try {
+            MapsInitializer.initialize(getActivity().getApplicationContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        googleMap = mMapView.getMap();
+        // latitude and longitude
+        double latitude = 17.385044;
+        double longitude = 78.486671;
+
+        // create marker
+        MarkerOptions marker = new MarkerOptions().position(
+                new LatLng(latitude, longitude)).title("Hello Maps");
+
+        // Changing marker icon
+        marker.icon(BitmapDescriptorFactory
+                .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+
+        // adding marker
+        googleMap.addMarker(marker);
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(17.385044, 78.486671)).zoom(12).build();
+        googleMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(cameraPosition));
+
+        // Perform any camera updates here
 
         return rootView;
     }
+
+    /*** map stuff ***/
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mMapView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mMapView.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mMapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mMapView.onLowMemory();
+    }
+
+    /****/
+
 
     public class DownloadImagesTask extends AsyncTask<ImageView, Void, Bitmap> {
         ImageView imageView = null;
@@ -152,81 +194,6 @@ public class WatchFragment extends Fragment {
         }
 
 
-    }
-
-
-
-    private void setMapView() {
-        try {
-            MapsInitializer.initialize(getActivity());
-
-            /*
-            switch (GooglePlayServicesUtil
-                    .isGooglePlayServicesAvailable(getActivity())) {
-                case ConnectionResult.SUCCESS:
-                    // Toast.makeText(getActivity(), "SUCCESS", Toast.LENGTH_SHORT)
-                    // .show();
-
-                    // Gets to GoogleMap from the MapView and does initialization
-                    // stuff
-                    if (mapView != null) {
-
-                        locationManager = ((LocationManager) getActivity()
-                                .getSystemService(Context.LOCATION_SERVICE));
-
-                        Boolean localBoolean = Boolean.valueOf(locationManager
-                                .isProviderEnabled("network"));
-
-                        if (localBoolean.booleanValue()) {
-
-                            CENTER = new LatLng(longitudeDouble, latitudeDouble);
-
-                        } else {
-
-                        }
-                        map = mapView.getMap();
-                        if (map == null) {
-
-                            Log.d("", "Map Fragment Not Found or no Map in it!!");
-
-                        }
-
-                        map.clear();
-                        try {
-                            map.addMarker(new MarkerOptions().position(CENTER)
-                                    .title(CityName).snippet(""));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                        map.setIndoorEnabled(true);
-                        map.setMyLocationEnabled(true);
-                        map.moveCamera(CameraUpdateFactory.zoomTo(5));
-                        if (CENTER != null) {
-                            map.animateCamera(
-                                    CameraUpdateFactory.newLatLng(CENTER), 1750,
-                                    null);
-                        }
-                        // add circle
-                        CircleOptions circle = new CircleOptions();
-                        circle.center(CENTER).fillColor(Color.BLUE).radius(10);
-                        map.addCircle(circle);
-                        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-
-                    }
-                    break;
-                case ConnectionResult.SERVICE_MISSING:
-
-                    break;
-                case ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED:
-
-                    break;
-                default:
-
-            }*/
-        } catch (Exception e) {
-
-        }
     }
 
 
