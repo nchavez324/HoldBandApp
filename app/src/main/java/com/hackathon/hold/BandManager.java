@@ -24,6 +24,8 @@ import com.microsoft.band.tiles.pages.FilledButton;
 import com.microsoft.band.tiles.pages.FilledButtonData;
 import com.microsoft.band.tiles.pages.FlowPanel;
 import com.microsoft.band.tiles.pages.FlowPanelOrientation;
+import com.microsoft.band.tiles.pages.Icon;
+import com.microsoft.band.tiles.pages.IconData;
 import com.microsoft.band.tiles.pages.PageData;
 import com.microsoft.band.tiles.pages.PageLayout;
 import com.microsoft.band.tiles.pages.TextBlock;
@@ -48,15 +50,28 @@ public class BandManager {
     private static final UUID pageId2 = UUID.fromString("b1234567-89ab-cdef-0123-456789abcd01");
     private static final UUID pageId3 = UUID.fromString("b1234567-89ab-cdef-0123-456789abcd02");
 
+    private enum ICON_ID
+    {
+        HAND(2);
+        public int id;
+        ICON_ID(int id)
+        {
+            this.id = id;
+        }
+        public int getId()
+        {
+            return id;
+        }
+    }
+
     private enum VIEW_ID
     {
         EMERGENCY(1),
         PULSE(2),
         START_TITLE(3),
         START_MESSAGE(4),
-        POLICE_TITLE(5),
-        POLICE_MESSAGE(6),
-        BIG_EMERGENCY(7);
+        BIG_EMERGENCY(5),
+        HAND_ICON(6);
 
         public int id;
         VIEW_ID(int id)
@@ -181,8 +196,11 @@ public class BandManager {
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap tileIcon = BitmapFactory.decodeResource(mActivity.getBaseContext().getResources(), R.raw.logo, options);
 
+        Bitmap handIcon = BitmapFactory.decodeResource(mActivity.getBaseContext().getResources(), R.raw.hand_icon, options);
+
         BandTile tile = new BandTile.Builder(tileId, "Hold Tile", tileIcon)
                 .setPageLayouts(createStartLayout(), createActionLayout(), createPoliceLayout())
+                .setPageIcons(handIcon)
                 .build();
 
         Log.d("band_console", "Button Tile is adding ...\n");
@@ -203,12 +221,12 @@ public class BandManager {
                         .addElements(
 
                                 new TextBlock(0, 5, 200, 30, TextBlockFont.SMALL)
-                                        .setMargins(0, 10, 0, 0)
+                                        .setMargins(12, 10, 0, 0)
                                         .setId(VIEW_ID.START_TITLE.getId())
                                         .setColor(Color.WHITE),
 
                                 new TextBlock(0, 30, 200, 30, TextBlockFont.MEDIUM)
-                                        .setMargins(0, 0, 0, 0)
+                                        .setMargins(12, 0, 0, 0)
                                         .setId(VIEW_ID.START_MESSAGE.getId())
                                         .setColorSource(ElementColorSource.TILE_BASE)
                         )
@@ -229,7 +247,11 @@ public class BandManager {
                             new FilledButton(0, 0, 100, 100)
                                     .setMargins(0, 0, 0, 0)
                                     .setId(VIEW_ID.EMERGENCY.getId())
-                                    .setBackgroundColor(Color.RED)
+                                    .setBackgroundColor(Color.RED),
+
+                            new Icon(10, 10, 50, 50)
+                                    .setId(VIEW_ID.HAND_ICON.getId())
+                                    .setColor(Color.WHITE)
                     )
         );
     }
@@ -269,7 +291,8 @@ public class BandManager {
         {
             return new PageData(pageId2, 1)
                     .update(new FilledButtonData(VIEW_ID.EMERGENCY.getId(), Color.WHITE))
-                    .update(new FilledButtonData(VIEW_ID.PULSE.getId(), Color.WHITE));
+                    .update(new FilledButtonData(VIEW_ID.PULSE.getId(), Color.WHITE))
+                    .update(new IconData(VIEW_ID.HAND_ICON.getId(), 2));
         }
         else if(page==1)
         {
