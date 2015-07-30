@@ -153,7 +153,7 @@ public class SettingsFragment extends Fragment {
         String imgUrl = "https://cdn3.iconfinder.com/data/icons/black-easy/256/535108-user_256x256.png";
         try {
             imgUrl = "http://i.imgur.com/fa1TXUu.jpg";
-            //imgUrl = ((ParseFile) user.get("imgFile")).getUrl();
+            //imgUrl = user.get("imageFile");
         }
         catch (Exception e) {}
         ImageView i = (ImageView)rootView.findViewById(R.id.settings_imageButton);
