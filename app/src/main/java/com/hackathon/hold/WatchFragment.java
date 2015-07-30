@@ -26,7 +26,11 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hold.bandlayoutapp.R;
+import com.parse.FindCallback;
+import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
@@ -38,6 +42,7 @@ import java.net.URL;
 import java.net.HttpURLConnection;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -53,6 +58,7 @@ public class WatchFragment extends Fragment {
     MapView mMapView;
     private GoogleMap googleMap;
     private MainActivity mMainActivity;
+    ParseUser watching;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -74,15 +80,28 @@ public class WatchFragment extends Fragment {
 
         // auto fill out the items
         ParseUser user = ParseUser.getCurrentUser();
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Watcher");
+        query.whereEqualTo("Watcher", user);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> items, ParseException e) {
+                if (e == null) {
+                    //
+                } else {
+
+                    watching = (ParseUser) items.get(0).get("Wearer");
+                }
+            }
+        });
+
 
         try {
-            ((TextView) rootView.findViewById(R.id.watch_name)).setText(user.get("name").toString(), TextView.BufferType.EDITABLE);
+            ((TextView) rootView.findViewById(R.id.watch_name)).setText(watching.get("name").toString(), TextView.BufferType.EDITABLE);
         }
         catch (Exception e) {
             ((TextView) rootView.findViewById(R.id.watch_name)).setText("No One", TextView.BufferType.EDITABLE);
         }
         try {
-            ((TextView) rootView.findViewById(R.id.watch_phone)).setText(user.get("phone").toString(), TextView.BufferType.EDITABLE);
+            ((TextView) rootView.findViewById(R.id.watch_phone)).setText(watching.get("phone").toString(), TextView.BufferType.EDITABLE);
         }
         catch (Exception e) {
             ((TextView) rootView.findViewById(R.id.watch_phone)).setText("", TextView.BufferType.EDITABLE);
@@ -102,11 +121,11 @@ public class WatchFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Do you want to call the police for <Name>?");
+                builder.setMessage("Do you want to call the police for "+watching.get("name").toString()+"?");
 // Add the buttons
                 builder.setPositiveButton("Call", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        Toast.makeText(getActivity(),"Calling the cops! (Not really)", Toast.LENGTH_LONG)
+                        Toast.makeText(getActivity(), "Calling the cops! (Not really)", Toast.LENGTH_LONG)
                                 .show();
                     }
                 });

@@ -81,7 +81,6 @@ public class SettingsFragment extends Fragment {
         i.setTag(imgUrl);
         new DownloadImagesTask().execute(i);
 
-
         try {
             ((EditText) rootView.findViewById(R.id.settings_email)).setText(user.get("email").toString(), TextView.BufferType.EDITABLE);
         } catch( Exception e) {

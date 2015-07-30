@@ -9,11 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hold.bandlayoutapp.R;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -51,6 +56,38 @@ public class WearFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_wear, container, false);
 
+
+        Button mAddFriendButton = (Button) rootView.findViewById(R.id.add_friend);
+        mAddFriendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                View rootView = (View) view.getParent();
+                String username = "";
+
+                try {
+                    username = ((EditText) rootView.findViewById(R.id.friend_username)).getText().toString();
+                } catch (Exception e) {}
+
+//                ParseUser user = ParseUser.getCurrentUser();
+//                user.put("name", username);
+//                user.saveInBackground(new SaveCallback() {
+//                    public void done(ParseException e) {
+//                        if (e == null) {
+                            Toast.makeText(getActivity(),
+                                    "Friend added.", Toast.LENGTH_LONG)
+                                    .show();
+                            // TODO: ADD A REFRESH SOMEHOW
+//                        } else {
+//                            Toast.makeText(getActivity(),
+//                                    "Error: " + e.toString(), Toast.LENGTH_LONG)
+//                                    .show();
+//                        }
+//                    }
+//                });
+            }
+        });
+
+        // friends list
         mListAdapter = new FriendListAdapter();
 
         mListView = (ListView)rootView.findViewById(R.id.friend_list_view);
