@@ -46,6 +46,7 @@ public class BandManager {
     private static final UUID tileId = UUID.fromString("cc0D508F-70A3-47D4-BBA3-812BADB1F8Aa");
     private static final UUID pageId1 = UUID.fromString("b1234567-89ab-cdef-0123-456789abcd00");
     private static final UUID pageId2 = UUID.fromString("b1234567-89ab-cdef-0123-456789abcd01");
+    private static final UUID pageId3 = UUID.fromString("b1234567-89ab-cdef-0123-456789abcd02");
 
     private enum VIEW_ID
     {
@@ -175,13 +176,13 @@ public class BandManager {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap tileIcon = BitmapFactory.decodeResource(mActivity.getBaseContext().getResources(), R.raw.b_icon, options);
+        Bitmap tileIcon = BitmapFactory.decodeResource(mActivity.getBaseContext().getResources(), R.raw.tile_icon_large, options);
 
         PageLayout startLayout = createStartLayout();
         PageLayout actionLayout = createActionLayout();
 
 
-        BandTile tile = new BandTile.Builder(tileId, "Button Tile", tileIcon)
+        BandTile tile = new BandTile.Builder(tileId, "Hold Tile", tileIcon)
                 .setPageLayouts(createStartLayout(), createActionLayout())
                 .build();
 
@@ -237,7 +238,7 @@ public class BandManager {
     private void updatePages() throws BandIOException {
 
             client.getTileManager().setPages(tileId,
-                    getPageData(1), getPageData(2));
+                    getPageData(3),getPageData(1), getPageData(2));
             Log.d("band_console", "Send button page data to tile page \n\n");
     }
 
@@ -247,13 +248,19 @@ public class BandManager {
         {
             return new PageData(pageId2, 1)
                     .update(new FilledButtonData(VIEW_ID.EMERGENCY.getId(), Color.WHITE))
-                    .update(new TextButtonData(VIEW_ID.PULSE.getId(), "Pulsing!"));
+                    .update(new TextButtonData(VIEW_ID.PULSE.getId(), "Send Pulse"));
         }
         else if (page == 2)
         {
             return new PageData(pageId1, 0)
                     .update(new TextBlockData(VIEW_ID.START_TITLE.getId(), "swipe to"))
                     .update(new TextBlockData(VIEW_ID.START_MESSAGE.getId(), "Start"));
+        }
+        else if(page==3)
+        {
+            return new PageData(pageId3, 0)
+                    .update(new TextBlockData(VIEW_ID.START_TITLE.getId(), "Calling"))
+                    .update(new TextBlockData(VIEW_ID.START_MESSAGE.getId(), "Police"));
         }
 
         return null;

@@ -132,9 +132,6 @@ public class WearFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
-
-
-
             if (convertView == null)
             {
                 convertView = WearFragment.this.mInflater.inflate(R.layout.cell_friend, parent, false);

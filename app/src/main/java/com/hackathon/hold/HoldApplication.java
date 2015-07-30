@@ -38,6 +38,5 @@ public class HoldApplication extends Application {
                 }
             }
         });
-
     }
 }
