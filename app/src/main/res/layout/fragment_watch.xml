@@ -88,8 +88,7 @@
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/watch_mapView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="7dp" />
+                android:layout_height="match_parent" />
 
 
         </RelativeLayout>
@@ -106,7 +105,8 @@
         app:elevation="6dp"
         android:src="@drawable/emergency"
         app:pressedTranslationZ="12dp"
-        android:clickable="true" />
+        android:clickable="true"
+        android:layout_margin="7dp" />
 
 
 </RelativeLayout>
