@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hold.bandlayoutapp.R;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -61,6 +62,11 @@ public class WatchFragment extends Fragment {
     ParseUser watching;
     private View rootView;
 
+
+    // latitude and longitude
+    double latitude = 47.6694;
+    double longitude = -122.1239;
+
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -93,24 +99,8 @@ public class WatchFragment extends Fragment {
         }
 
         googleMap = mMapView.getMap();
-        // latitude and longitude
-        double latitude = 17.385044;
-        double longitude = 78.486671;
 
-        // create marker
-        MarkerOptions marker = new MarkerOptions().position(
-                new LatLng(latitude, longitude)).title("<Name>");
 
-        // Changing marker icon
-        marker.icon(BitmapDescriptorFactory
-                .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-
-        // adding marker
-        googleMap.addMarker(marker);
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(17.385044, 78.486671)).zoom(12).build();
-        googleMap.animateCamera(CameraUpdateFactory
-                .newCameraPosition(cameraPosition));
 
         // Perform any camera updates here
 
@@ -128,13 +118,26 @@ public class WatchFragment extends Fragment {
         ParseUser user = ParseUser.getCurrentUser();
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Watcher");
         query.whereEqualTo("Watcher", user);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> items, ParseException e) {
-                if (e == null) {
-                    //
-                } else {
 
-                    watching = (ParseUser) items.get(0).get("Wearer");
+        Log.e("watching", "user id " + user.getObjectId().toString());
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            public void done(ParseObject item, ParseException e) {
+                if (e == null) {
+                    Log.d("watching", "found someone" + item.get("Wearer"));
+                    ParseQuery<ParseUser> query = ParseUser.getQuery();
+                    query.whereEqualTo("username", item.get("Wearer"));
+                    query.getFirstInBackground(new GetCallback<ParseUser>() {
+                        public void done(ParseUser object, ParseException e) {
+                            if (e == null) {
+                                watching = object;
+                            } else {
+                                // Something went wrong.
+                            }
+                        }
+                    });
+
+                } else {
+                    Log.e("watching", "could not find anybody");
                 }
             }
         });
@@ -142,6 +145,21 @@ public class WatchFragment extends Fragment {
 
         try {
             ((TextView) rootView.findViewById(R.id.watch_name)).setText(watching.get("name").toString(), TextView.BufferType.EDITABLE);
+
+            // create marker
+            MarkerOptions marker = new MarkerOptions().position(
+                    new LatLng(latitude, longitude)).title(watching.get("name").toString());
+
+            // Changing marker icon
+            marker.icon(BitmapDescriptorFactory
+                    .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+
+            // adding marker
+            googleMap.addMarker(marker);
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(latitude, longitude)).zoom(12).build();
+            googleMap.animateCamera(CameraUpdateFactory
+                    .newCameraPosition(cameraPosition));
         }
         catch (Exception e) {
             ((TextView) rootView.findViewById(R.id.watch_name)).setText("No One", TextView.BufferType.EDITABLE);
@@ -153,11 +171,15 @@ public class WatchFragment extends Fragment {
             ((TextView) rootView.findViewById(R.id.watch_phone)).setText("", TextView.BufferType.EDITABLE);
         }
 
-        String imgUrl = "http://www.muttsbetter.com/gallery/lilybefore.JPG";
+        String imgUrl = "https://cdn3.iconfinder.com/data/icons/black-easy/256/535108-user_256x256.png";
         try {
-            imgUrl = ((ParseFile) user.get("imgFile")).getUrl();
+            //imgUrl = ((ParseFile) watching.get("imgFile")).getUrl();
+            if(watching != null)
+                imgUrl = "https://media.licdn.com/media/AAEAAQAAAAAAAAMDAAAAJDMyOTU0ZDQxLWQyMWQtNGU5Mi04OWYwLWUyNjM2ZWMwYTMwOA.jpg";
         }
-        catch (Exception e) {}
+        catch (Exception e) {
+            Log.d("IMAGESSS", "could not get the image for some reason" + e.toString());
+        }
         ImageView i = (ImageView)rootView.findViewById(R.id.watch_imageView);
         i.setTag(imgUrl);
         new DownloadImagesTask().execute(i);

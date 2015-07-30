@@ -50,6 +50,7 @@ public class SettingsFragment extends Fragment {
 
     private MainActivity mMainActivity;
     private View rootView;
+    private boolean uploadedImg = false;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -72,32 +73,58 @@ public class SettingsFragment extends Fragment {
 
 
 
+        Button mLogoutButton = (Button) rootView.findViewById(R.id.settings_logout);
+        mLogoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ParseUser.logOut();
+                Intent intent = new Intent(getActivity(),
+                        LoginActivity.class);
+                startActivity(intent);
+            }
+        });
 
+
+        return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // auto fill out the items
+        ParseUser user = ParseUser.getCurrentUser();
         Button mSaveButton = (Button) rootView.findViewById(R.id.settings_save);
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                View rootView = (View) view.getParent();
                 String name = "";
-                String phone ="";
-                String email ="";
+                String phone = "";
+                String email = "";
 
                 try {
                     name = ((EditText) rootView.findViewById(R.id.settings_name)).getText().toString();
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
 
                 try {
                     phone = ((EditText) rootView.findViewById(R.id.settings_phone)).getText().toString();
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
 
                 try {
                     email = ((EditText) rootView.findViewById(R.id.settings_email)).getText().toString();
-                } catch(Exception e) {}
+                } catch (Exception e) {
+                }
 
                 ParseUser user = ParseUser.getCurrentUser();
                 user.put("name", name);
                 user.put("phone", phone);
                 user.put("email", email);
+                if (uploadedImg) {
+                    //user.put("imgFile", );
+                }
+                Log.d("saving_settings", "to save: " + name + phone + email);
                 user.saveInBackground(new SaveCallback() {
                     public void done(ParseException e) {
                         if (e == null) {
@@ -114,16 +141,6 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        Button mLogoutButton = (Button) rootView.findViewById(R.id.settings_logout);
-        mLogoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ParseUser.logOut();
-                Intent intent = new Intent(getActivity(),
-                        LoginActivity.class);
-                startActivity(intent);
-            }
-        });
 
         ImageButton mImageButton = (ImageButton) rootView.findViewById(R.id.settings_imageButton);
         mImageButton.setOnClickListener(new View.OnClickListener() {
@@ -133,21 +150,10 @@ public class SettingsFragment extends Fragment {
 
             }
         });
-
-        return rootView;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        // auto fill out the items
-        ParseUser user = ParseUser.getCurrentUser();
-
-
-        String imgUrl = "http://www.muttsbetter.com/gallery/lilybefore.JPG";
+        String imgUrl = "https://cdn3.iconfinder.com/data/icons/black-easy/256/535108-user_256x256.png";
         try {
-            imgUrl = ((ParseFile) user.get("imgFile")).getUrl();
+            imgUrl = "http://i.imgur.com/fa1TXUu.jpg";
+            //imgUrl = ((ParseFile) user.get("imgFile")).getUrl();
         }
         catch (Exception e) {}
         ImageView i = (ImageView)rootView.findViewById(R.id.settings_imageButton);
@@ -235,8 +241,9 @@ public class SettingsFragment extends Fragment {
                 i.setImageBitmap(BitmapFactory
                         .decodeFile(imgDecodableString));
 
-                Toast.makeText(getActivity(),"Pictures are not saved for now!", Toast.LENGTH_LONG)
-                        .show();
+                uploadedImg = true;
+              //  Toast.makeText(getActivity(),"Pictures are not saved for now!", Toast.LENGTH_LONG)
+              //          .show();
 
             } else {
                 Toast.makeText(getActivity(),"You did not pick an image.", Toast.LENGTH_LONG)
