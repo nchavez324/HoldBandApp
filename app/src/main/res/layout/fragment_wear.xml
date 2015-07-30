@@ -20,7 +20,7 @@
             <EditText
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Username"
+                android:hint="Username"
                 android:layout_weight=".60"
                 android:id="@+id/friend_username" />
 
