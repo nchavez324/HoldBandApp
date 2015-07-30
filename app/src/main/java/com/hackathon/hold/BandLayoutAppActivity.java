@@ -147,7 +147,7 @@ public class BandLayoutAppActivity extends Activity {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap tileIcon = BitmapFactory.decodeResource(getBaseContext().getResources(), R.raw.a_icon, options);
+        Bitmap tileIcon = BitmapFactory.decodeResource(getBaseContext().getResources(), R.raw.logo, options);
 
         BandTile tile = new BandTile.Builder(tileId, "Barcode Tile", tileIcon)
                 .setPageLayouts(createBarcodeLayout(BarcodeType.CODE39), createBarcodeLayout(BarcodeType.PDF417))

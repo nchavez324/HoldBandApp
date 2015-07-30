@@ -190,7 +190,7 @@ public class BandTileEventAppActivity extends Activity {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap tileIcon = BitmapFactory.decodeResource(getBaseContext().getResources(), R.raw.b_icon, options);
+        Bitmap tileIcon = BitmapFactory.decodeResource(getBaseContext().getResources(), R.raw.logo, options);
 
         BandTile tile = new BandTile.Builder(tileId, "Button Tile", tileIcon)
                 .setPageLayouts(createButtonLayout())
