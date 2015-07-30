@@ -1,8 +1,13 @@
 package com.hackathon.hold;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.parse.Parse;
+import com.parse.ParsePush;
+import com.parse.SaveCallback;
+
+import java.text.ParseException;
 
 /**
  * Created by nick on 7/27/15.
@@ -23,5 +28,15 @@ public class HoldApplication extends Application {
 
         Parse.initialize(this, HoldApplication.appId, HoldApplication.clientKey);
 
+        ParsePush.subscribeInBackground("", new SaveCallback() {
+            @Override
+            public void done(com.parse.ParseException e) {
+                if (e == null) {
+                    Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+                } else {
+                    Log.e("com.parse.push", "failed to subscribe for push", e);
+                }
+            }
+        });
     }
 }

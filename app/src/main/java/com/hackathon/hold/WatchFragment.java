@@ -28,11 +28,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.hold.bandlayoutapp.R;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
+import com.parse.ParseUser;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.HttpURLConnection;
+
+import java.util.HashMap;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -222,5 +227,27 @@ public class WatchFragment extends Fragment {
     public void setMainActivity(MainActivity mainActivity)
     {
         mMainActivity = mainActivity;
+    }
+
+    public void onGetUserId(String userId)
+    {
+        //do something to show map blah blah for current user
+
+        // tell parse this current user is watching the user given by user id
+
+        sendWatchSignal(userId);
+    }
+
+    private void sendWatchSignal(String userId)
+    {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("pulse_user_id", userId);
+        ParseCloud.callFunctionInBackground("onWatch", params, new FunctionCallback<Boolean>() {
+            public void done(Boolean success, com.parse.ParseException e) {
+                if (e == null) {
+                    // ratings is 4.5
+                }
+            }
+        });
     }
 }
