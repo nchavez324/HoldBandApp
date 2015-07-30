@@ -79,68 +79,6 @@ public class WatchFragment extends Fragment {
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_watch, container, false);
 
-        // auto fill out the items
-        ParseUser user = ParseUser.getCurrentUser();
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Watcher");
-        query.whereEqualTo("Watcher", user);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> items, ParseException e) {
-                if (e == null) {
-                    //
-                } else {
-
-                    watching = (ParseUser) items.get(0).get("Wearer");
-                }
-            }
-        });
-
-
-        try {
-            ((TextView) rootView.findViewById(R.id.watch_name)).setText(watching.get("name").toString(), TextView.BufferType.EDITABLE);
-        }
-        catch (Exception e) {
-            ((TextView) rootView.findViewById(R.id.watch_name)).setText("No One", TextView.BufferType.EDITABLE);
-        }
-        try {
-            ((TextView) rootView.findViewById(R.id.watch_phone)).setText(watching.get("phone").toString(), TextView.BufferType.EDITABLE);
-        }
-        catch (Exception e) {
-            ((TextView) rootView.findViewById(R.id.watch_phone)).setText("", TextView.BufferType.EDITABLE);
-        }
-
-        String imgUrl = "http://www.muttsbetter.com/gallery/lilybefore.JPG";
-        try {
-            imgUrl = ((ParseFile) user.get("imgFile")).getUrl();
-        }
-        catch (Exception e) {}
-        ImageView i = (ImageView)rootView.findViewById(R.id.watch_imageView);
-        i.setTag(imgUrl);
-        new DownloadImagesTask().execute(i);
-
-        FloatingActionButton mEmergencyButton = (FloatingActionButton) rootView.findViewById(R.id.watch_fab);
-        mEmergencyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Do you want to call the police for "+watching.get("name").toString()+"?");
-                // Add the buttons
-                builder.setPositiveButton("Call", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Toast.makeText(getActivity(), "Calling the cops! (Not really)", Toast.LENGTH_LONG)
-                                .show();
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User cancelled the dialog
-                    }
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }
-        });
-
-
 
         // map stuff
         mMapView = (MapView) rootView.findViewById(R.id.watch_mapView);
@@ -185,6 +123,76 @@ public class WatchFragment extends Fragment {
     public void onResume() {
         super.onResume();
         mMapView.onResume();
+
+        // auto fill out the items
+        ParseUser user = ParseUser.getCurrentUser();
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Watcher");
+        query.whereEqualTo("Watcher", user);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> items, ParseException e) {
+                if (e == null) {
+                    //
+                } else {
+
+                    watching = (ParseUser) items.get(0).get("Wearer");
+                }
+            }
+        });
+
+
+        try {
+            ((TextView) rootView.findViewById(R.id.watch_name)).setText(watching.get("name").toString(), TextView.BufferType.EDITABLE);
+        }
+        catch (Exception e) {
+            ((TextView) rootView.findViewById(R.id.watch_name)).setText("No One", TextView.BufferType.EDITABLE);
+        }
+        try {
+            ((TextView) rootView.findViewById(R.id.watch_phone)).setText(watching.get("phone").toString(), TextView.BufferType.EDITABLE);
+        }
+        catch (Exception e) {
+            ((TextView) rootView.findViewById(R.id.watch_phone)).setText("", TextView.BufferType.EDITABLE);
+        }
+
+        String imgUrl = "http://www.muttsbetter.com/gallery/lilybefore.JPG";
+        try {
+            imgUrl = ((ParseFile) user.get("imgFile")).getUrl();
+        }
+        catch (Exception e) {}
+        ImageView i = (ImageView)rootView.findViewById(R.id.watch_imageView);
+        i.setTag(imgUrl);
+        new DownloadImagesTask().execute(i);
+
+        FloatingActionButton mEmergencyButton = (FloatingActionButton) rootView.findViewById(R.id.watch_fab);
+        mEmergencyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                try {
+                    builder.setMessage("Do you want to call the police for " + watching.get("name").toString() + "?");
+
+                } catch (Exception e) {
+                    builder.setMessage("Do you want to call the police?");
+
+                }
+                // Add the buttons
+                builder.setPositiveButton("Call", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Toast.makeText(getActivity(), "Calling the police! (Not really)", Toast.LENGTH_LONG)
+                                .show();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+
+
     }
 
     @Override
