@@ -49,6 +49,7 @@ public class SettingsFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
 
     private MainActivity mMainActivity;
+    private View rootView;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -66,38 +67,8 @@ public class SettingsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_settings, container, false);
+        rootView = inflater.inflate(R.layout.fragment_settings, container, false);
 
-        // auto fill out the items
-        ParseUser user = ParseUser.getCurrentUser();
-
-
-        String imgUrl = "http://www.muttsbetter.com/gallery/lilybefore.JPG";
-        try {
-            imgUrl = ((ParseFile) user.get("imgFile")).getUrl();
-        }
-        catch (Exception e) {}
-        ImageView i = (ImageView)rootView.findViewById(R.id.settings_imageButton);
-        i.setTag(imgUrl);
-        new DownloadImagesTask().execute(i);
-
-        try {
-            ((EditText) rootView.findViewById(R.id.settings_email)).setText(user.get("email").toString(), TextView.BufferType.EDITABLE);
-        } catch( Exception e) {
-            ((EditText) rootView.findViewById(R.id.settings_email)).setText("Email", TextView.BufferType.EDITABLE);
-        }
-        try {
-            ((EditText) rootView.findViewById(R.id.settings_name)).setText(user.get("name").toString(), TextView.BufferType.EDITABLE);
-        }
-        catch (Exception e) {
-            ((EditText) rootView.findViewById(R.id.settings_name)).setText("Name", TextView.BufferType.EDITABLE);
-        }
-        try {
-            ((EditText) rootView.findViewById(R.id.settings_phone)).setText(user.get("phone").toString(), TextView.BufferType.EDITABLE);
-        }
-        catch (Exception e) {
-            ((EditText) rootView.findViewById(R.id.settings_phone)).setText("Phone", TextView.BufferType.EDITABLE);
-        }
 
 
 
@@ -166,6 +137,41 @@ public class SettingsFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // auto fill out the items
+        ParseUser user = ParseUser.getCurrentUser();
+
+
+        String imgUrl = "http://www.muttsbetter.com/gallery/lilybefore.JPG";
+        try {
+            imgUrl = ((ParseFile) user.get("imgFile")).getUrl();
+        }
+        catch (Exception e) {}
+        ImageView i = (ImageView)rootView.findViewById(R.id.settings_imageButton);
+        i.setTag(imgUrl);
+        new DownloadImagesTask().execute(i);
+
+        try {
+            ((EditText) rootView.findViewById(R.id.settings_email)).setText(user.get("email").toString(), TextView.BufferType.EDITABLE);
+        } catch( Exception e) {
+            ((EditText) rootView.findViewById(R.id.settings_email)).setText("Email", TextView.BufferType.EDITABLE);
+        }
+        try {
+            ((EditText) rootView.findViewById(R.id.settings_name)).setText(user.get("name").toString(), TextView.BufferType.EDITABLE);
+        }
+        catch (Exception e) {
+            ((EditText) rootView.findViewById(R.id.settings_name)).setText("Name", TextView.BufferType.EDITABLE);
+        }
+        try {
+            ((EditText) rootView.findViewById(R.id.settings_phone)).setText(user.get("phone").toString(), TextView.BufferType.EDITABLE);
+        }
+        catch (Exception e) {
+            ((EditText) rootView.findViewById(R.id.settings_phone)).setText("Phone", TextView.BufferType.EDITABLE);
+        }
+    }
 
     public class DownloadImagesTask extends AsyncTask<ImageView, Void, Bitmap> {
         ImageView imageView = null;

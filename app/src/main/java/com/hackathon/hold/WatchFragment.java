@@ -59,6 +59,7 @@ public class WatchFragment extends Fragment {
     private GoogleMap googleMap;
     private MainActivity mMainActivity;
     ParseUser watching;
+    private View rootView;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -76,7 +77,7 @@ public class WatchFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_watch, container, false);
+        rootView = inflater.inflate(R.layout.fragment_watch, container, false);
 
         // auto fill out the items
         ParseUser user = ParseUser.getCurrentUser();
@@ -116,13 +117,13 @@ public class WatchFragment extends Fragment {
         i.setTag(imgUrl);
         new DownloadImagesTask().execute(i);
 
-        FloatingActionButton mSignInButton = (FloatingActionButton) rootView.findViewById(R.id.watch_fab);
-        mSignInButton.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton mEmergencyButton = (FloatingActionButton) rootView.findViewById(R.id.watch_fab);
+        mEmergencyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setMessage("Do you want to call the police for "+watching.get("name").toString()+"?");
-// Add the buttons
+                // Add the buttons
                 builder.setPositiveButton("Call", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Toast.makeText(getActivity(), "Calling the cops! (Not really)", Toast.LENGTH_LONG)
