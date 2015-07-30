@@ -73,7 +73,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
+
         // Send logged in users to UI
         setContentView(R.layout.activity_main);
         mMessageReceiver = getBandBroadcastReceiver();
@@ -83,23 +84,19 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         mBandManager = new BandManager(this);
 
-                // Get current user data from Parse.com
-                ParseUser currentUser = ParseUser.getCurrentUser();
-                if (currentUser != null) {
-                    Toast.makeText(getApplicationContext(),
-                            "Welcome, "+ currentUser.getUsername(), Toast.LENGTH_LONG)
-                            .show();
+        // Get current user data from Parse.com
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser != null) {
+            Toast.makeText(getApplicationContext(),
+                    "Welcome, "+ currentUser.getUsername(), Toast.LENGTH_LONG)
+                    .show();
 
-                } else {
-                    // Send user to LoginSignupActivity.class
-                    Intent intent = new Intent(MainActivity.this,
-                            LoginActivity.class);
-                    startActivity(intent);
-                }
-
-
-
-
+        } else {
+            // Send user to LoginSignupActivity.class
+            Intent intent = new Intent(MainActivity.this,
+                    LoginActivity.class);
+            startActivity(intent);
+        }
 
         buildGoogleApiClient();
        // userSignIn();
@@ -167,8 +164,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     protected LocationRequest createLocationRequest() {
 
         LocationRequest locRequest = new LocationRequest();
-        locRequest.setInterval(3000);
+        locRequest.setInterval(2000);
         locRequest.setFastestInterval(1000);
+        locRequest.setSmallestDisplacement(10);
         locRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         return locRequest;
@@ -176,18 +174,28 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     protected void startLocationUpdates() {
 
-        if (!mAlreadyRequesting && isClientBuilt)
+        if (!mAlreadyRequesting && mGoogleApiClient.isConnected())
         {
             mAlreadyRequesting = true;
+            /*
+            Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+            if (lastLocation != null)
+            {
+                sendPulseToServer(lastLocation);
+            }
+            */
+
             LocationServices.FusedLocationApi.requestLocationUpdates(
                     mGoogleApiClient, mLocationRequest, this);
         }
     }
 
     protected void stopLocationUpdates() {
+
+        mAlreadyRequesting = false;
         LocationServices.FusedLocationApi.removeLocationUpdates(
                 mGoogleApiClient, this);
-        mAlreadyRequesting = false;
     }
 
     @Override
@@ -195,6 +203,11 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         stopLocationUpdates();
 
+        sendPulseToServer(location);
+    }
+
+    private void sendPulseToServer(Location location)
+    {
         ParseObject pulseObject = new ParseObject("Pulse");
         //collect GPS and location data, send to parse
         ParseGeoPoint point = new ParseGeoPoint(location.getLatitude(), location.getLongitude());
@@ -211,8 +224,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        isClientBuilt = true;
 
+        isClientBuilt = true;
     }
 
     private BroadcastReceiver getLocalBroadcastReceiver()
@@ -324,18 +337,18 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     public void onPulse(){
 
-
         mLocationRequest = createLocationRequest();
         startLocationUpdates();
-
     }
 
     @Override
     public void onConnectionSuspended(int i) {
+        Log.d("g", "d");
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.d("f", "f");
     }
 
     public void onPulseOpened(String pulseSenderUserId) {
