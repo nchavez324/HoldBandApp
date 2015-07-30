@@ -133,8 +133,8 @@ public class BandNotificationAppActivity extends Activity {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap tileIcon = BitmapFactory.decodeResource(getBaseContext().getResources(), R.raw.tile_icon_large, options);
-        Bitmap badgeIcon = BitmapFactory.decodeResource(getBaseContext().getResources(), R.raw.tile_icon_small, options);
+        Bitmap tileIcon = BitmapFactory.decodeResource(getBaseContext().getResources(), R.raw.logo, options);
+        Bitmap badgeIcon = BitmapFactory.decodeResource(getBaseContext().getResources(), R.raw.logo, options);
 
         BandTile tile = new BandTile.Builder(tileId, "MessageTile", tileIcon)
                 .setTileSmallIcon(badgeIcon).build();
