@@ -1,28 +1,26 @@
 package com.hackathon.hold;
 
-import android.content.Context;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -76,13 +74,13 @@ public class WatchFragment extends Fragment {
             ((TextView) rootView.findViewById(R.id.watch_name)).setText(user.get("name").toString(), TextView.BufferType.EDITABLE);
         }
         catch (Exception e) {
-            ((TextView) rootView.findViewById(R.id.watch_name)).setText("No Name", TextView.BufferType.EDITABLE);
+            ((TextView) rootView.findViewById(R.id.watch_name)).setText("No One", TextView.BufferType.EDITABLE);
         }
         try {
             ((TextView) rootView.findViewById(R.id.watch_phone)).setText(user.get("phone").toString(), TextView.BufferType.EDITABLE);
         }
         catch (Exception e) {
-            ((TextView) rootView.findViewById(R.id.watch_phone)).setText("No Phone Number", TextView.BufferType.EDITABLE);
+            ((TextView) rootView.findViewById(R.id.watch_phone)).setText("", TextView.BufferType.EDITABLE);
         }
 
         String imgUrl = "http://www.muttsbetter.com/gallery/lilybefore.JPG";
@@ -93,6 +91,30 @@ public class WatchFragment extends Fragment {
         ImageView i = (ImageView)rootView.findViewById(R.id.watch_imageView);
         i.setTag(imgUrl);
         new DownloadImagesTask().execute(i);
+
+        FloatingActionButton mSignInButton = (FloatingActionButton) rootView.findViewById(R.id.watch_fab);
+        mSignInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("Do you want to call the police for <Name>?");
+// Add the buttons
+                builder.setPositiveButton("Call", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Toast.makeText(getActivity(),"Calling the cops! (Not really)", Toast.LENGTH_LONG)
+                                .show();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+
 
 
         // map stuff

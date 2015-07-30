@@ -230,7 +230,7 @@ public class SettingsFragment extends Fragment {
                 i.setImageBitmap(BitmapFactory
                         .decodeFile(imgDecodableString));
 
-                Toast.makeText(getActivity(),"Under construction!", Toast.LENGTH_LONG)
+                Toast.makeText(getActivity(),"Pictures are not saved for now!", Toast.LENGTH_LONG)
                         .show();
 
             } else {

@@ -1,6 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -14,8 +17,7 @@
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/gridLayout">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:layout_width="99dp"
@@ -23,7 +25,8 @@
                 android:id="@+id/watch_imageView"
                 android:layout_row="1"
                 android:layout_column="0"
-                android:layout_margin="7dp" />
+                android:layout_marginRight="7dp"
+                android:layout_marginBottom="7dp" />
 
             <LinearLayout
                 android:orientation="vertical"
@@ -33,8 +36,17 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="You are currently watching"
+                    android:id="@+id/watch_label"
+                    android:layout_alignEnd="@+id/gridLayout"
+                    android:layout_below="@+id/textView" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="No Name"
+                    android:text="No One"
                     android:id="@+id/watch_name"
                     android:layout_alignParentTop="true"
                     android:layout_alignEnd="@+id/gridLayout" />
@@ -43,7 +55,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="No Phone Number"
+                    android:text=""
                     android:id="@+id/watch_phone"
                     android:layout_alignEnd="@+id/gridLayout"
                     android:layout_below="@+id/textView" />
@@ -61,34 +73,40 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true">
 
-            <Button
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:text="Emergency"
-                android:id="@+id/button"
-                android:layout_row="24"
-                android:layout_column="1"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true" />
-
-
-            <!--<fragment-->
-                <!--android:id="@+id/mapView"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--class="com.google.android.gms.maps.SupportMapFragment" />-->
-
+            <!--<Button-->
+                <!--android:layout_width="120dp"-->
+                <!--android:layout_height="120dp"-->
+                <!--android:text="Emergency"-->
+                <!--android:id="@+id/button"-->
+                <!--android:layout_row="24"-->
+                <!--android:layout_column="1"-->
+                <!--android:layout_alignParentBottom="true"-->
+                <!--android:layout_alignParentEnd="true" />-->
 
 
             <com.google.android.gms.maps.MapView
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/watch_mapView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:paddingBottom="7dp" />
 
 
         </RelativeLayout>
 
     </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/watch_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="false"
+        app:backgroundTint="#ffff1a24"
+        app:elevation="6dp"
+        android:src="@drawable/emergency"
+        app:pressedTranslationZ="12dp"
+        android:clickable="true" />
+
 
 </RelativeLayout>
