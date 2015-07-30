@@ -55,7 +55,8 @@ public class BandManager {
         START_TITLE(3),
         START_MESSAGE(4),
         POLICE_TITLE(5),
-        POLICE_MESSAGE(6);
+        POLICE_MESSAGE(6),
+        BIG_EMERGENCY(7);
 
         public int id;
         VIEW_ID(int id)
@@ -198,7 +199,7 @@ public class BandManager {
 
         return new PageLayout(
 
-                new FlowPanel(40, 0, 245, 100, FlowPanelOrientation.VERTICAL)
+                new FlowPanel(0, 0, 245, 100, FlowPanelOrientation.VERTICAL)
                         .addElements(
 
                                 new TextBlock(0, 5, 200, 30, TextBlockFont.SMALL)
@@ -217,15 +218,15 @@ public class BandManager {
     private PageLayout createActionLayout() {
 
         return new PageLayout(
-                new FlowPanel(0, 0, 300, 100, FlowPanelOrientation.HORIZONTAL)
+                new FlowPanel(0, 0, 320, 100, FlowPanelOrientation.HORIZONTAL)
                     .addElements(
 
-                            new TextButton(0, 0, 160, 100)
+                            new FilledButton(0, 0, 220, 100)
                                     .setMargins(0, 0, 0, 0)
                                     .setId(VIEW_ID.PULSE.getId())
-                                    .setPressedColor(Color.YELLOW),
+                                    .setBackgroundColor(Color.YELLOW),
 
-                            new FilledButton(0, 0, 180, 100)
+                            new FilledButton(0, 0, 100, 100)
                                     .setMargins(0, 0, 0, 0)
                                     .setId(VIEW_ID.EMERGENCY.getId())
                                     .setBackgroundColor(Color.RED)
@@ -237,18 +238,13 @@ public class BandManager {
 
         return new PageLayout(
 
-                new FlowPanel(40, 0, 245, 100, FlowPanelOrientation.VERTICAL)
+                new FlowPanel(0, 0, 320, 100, FlowPanelOrientation.VERTICAL)
                         .addElements(
 
-                                new TextBlock(0, 5, 200, 30, TextBlockFont.SMALL)
-                                        .setMargins(0, 10, 0, 0)
-                                        .setId(VIEW_ID.POLICE_TITLE.getId())
-                                        .setColor(Color.WHITE),
-
-                                new TextBlock(0, 30, 200, 30, TextBlockFont.MEDIUM)
+                                new FilledButton(0, 0, 320, 100)
                                         .setMargins(0, 0, 0, 0)
-                                        .setId(VIEW_ID.POLICE_MESSAGE.getId())
-                                        .setColorSource(ElementColorSource.TILE_BASE)
+                                        .setId(VIEW_ID.BIG_EMERGENCY.getId())
+                                        .setBackgroundColor(Color.RED)
                         )
         );
     }
@@ -273,13 +269,12 @@ public class BandManager {
         {
             return new PageData(pageId2, 1)
                     .update(new FilledButtonData(VIEW_ID.EMERGENCY.getId(), Color.WHITE))
-                    .update(new TextButtonData(VIEW_ID.PULSE.getId(), "Send Pulse"));
+                    .update(new FilledButtonData(VIEW_ID.PULSE.getId(), Color.WHITE));
         }
         else if(page==1)
         {
             return new PageData(pageId3, 2)
-                    .update(new TextBlockData(VIEW_ID.POLICE_TITLE.getId(), "Calling"))
-                    .update(new TextBlockData(VIEW_ID.POLICE_MESSAGE.getId(), "Police"));
+                    .update(new FilledButtonData(VIEW_ID.BIG_EMERGENCY.getId(), Color.WHITE));
         }
 
         return null;

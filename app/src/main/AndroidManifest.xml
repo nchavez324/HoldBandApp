@@ -56,7 +56,8 @@
             android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
         <activity
             android:name="com.hackathon.hold.MainActivity"
-            android:label="@string/title_activity_main" >
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
