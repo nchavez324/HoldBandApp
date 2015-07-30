@@ -176,7 +176,7 @@ public class BandManager {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap tileIcon = BitmapFactory.decodeResource(mActivity.getBaseContext().getResources(), R.raw.tile_icon_large, options);
+        Bitmap tileIcon = BitmapFactory.decodeResource(mActivity.getBaseContext().getResources(), R.raw.logo, options);
 
         PageLayout startLayout = createStartLayout();
         PageLayout actionLayout = createActionLayout();
