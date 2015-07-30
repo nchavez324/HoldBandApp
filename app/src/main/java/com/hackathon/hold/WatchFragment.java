@@ -62,11 +62,6 @@ public class WatchFragment extends Fragment {
     ParseUser watching;
     private View rootView;
 
-
-    // latitude and longitude
-    double latitude = 47.6694;
-    double longitude = -122.1239;
-
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -99,8 +94,18 @@ public class WatchFragment extends Fragment {
         }
 
         googleMap = mMapView.getMap();
+        // latitude and longitude
+        double latitude = 47.6694;
+        double longitude = -122.1239;
 
 
+
+        // adding marker
+        googleMap.addMarker(marker);
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(latitude, longitude)).zoom(12).build();
+        googleMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(cameraPosition));
 
         // Perform any camera updates here
 

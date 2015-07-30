@@ -53,7 +53,10 @@ public class BandManager {
         EMERGENCY(1),
         PULSE(2),
         START_TITLE(3),
-        START_MESSAGE(4);
+        START_MESSAGE(4),
+        POLICE_TITLE(5),
+        POLICE_MESSAGE(6),
+        BIG_EMERGENCY(7);
 
         public int id;
         VIEW_ID(int id)
@@ -178,12 +181,8 @@ public class BandManager {
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap tileIcon = BitmapFactory.decodeResource(mActivity.getBaseContext().getResources(), R.raw.logo, options);
 
-        PageLayout startLayout = createStartLayout();
-        PageLayout actionLayout = createActionLayout();
-
-
         BandTile tile = new BandTile.Builder(tileId, "Hold Tile", tileIcon)
-                .setPageLayouts(createStartLayout(), createActionLayout())
+                .setPageLayouts(createStartLayout(), createActionLayout(), createPoliceLayout())
                 .build();
 
         Log.d("band_console", "Button Tile is adding ...\n");
@@ -200,7 +199,7 @@ public class BandManager {
 
         return new PageLayout(
 
-                new FlowPanel(40, 0, 245, 100, FlowPanelOrientation.VERTICAL)
+                new FlowPanel(0, 0, 245, 100, FlowPanelOrientation.VERTICAL)
                         .addElements(
 
                                 new TextBlock(0, 5, 200, 30, TextBlockFont.SMALL)
@@ -219,15 +218,15 @@ public class BandManager {
     private PageLayout createActionLayout() {
 
         return new PageLayout(
-                new FlowPanel(0, 0, 300, 100, FlowPanelOrientation.HORIZONTAL)
+                new FlowPanel(0, 0, 320, 100, FlowPanelOrientation.HORIZONTAL)
                     .addElements(
 
-                            new TextButton(0, 0, 160, 100)
+                            new FilledButton(0, 0, 220, 100)
                                     .setMargins(0, 0, 0, 0)
                                     .setId(VIEW_ID.PULSE.getId())
-                                    .setPressedColor(Color.YELLOW),
+                                    .setBackgroundColor(Color.YELLOW),
 
-                            new FilledButton(0, 0, 180, 100)
+                            new FilledButton(0, 0, 100, 100)
                                     .setMargins(0, 0, 0, 0)
                                     .setId(VIEW_ID.EMERGENCY.getId())
                                     .setBackgroundColor(Color.RED)
@@ -235,32 +234,47 @@ public class BandManager {
         );
     }
 
+    private PageLayout createPoliceLayout() {
+
+        return new PageLayout(
+
+                new FlowPanel(0, 0, 320, 100, FlowPanelOrientation.VERTICAL)
+                        .addElements(
+
+                                new FilledButton(0, 0, 320, 100)
+                                        .setMargins(0, 0, 0, 0)
+                                        .setId(VIEW_ID.BIG_EMERGENCY.getId())
+                                        .setBackgroundColor(Color.RED)
+                        )
+        );
+    }
+
     private void updatePages() throws BandIOException {
 
             client.getTileManager().setPages(tileId,
-                    getPageData(3),getPageData(1), getPageData(2));
+                    getPageData(1), getPageData(2), getPageData(3));
             Log.d("band_console", "Send button page data to tile page \n\n");
     }
 
     private PageData getPageData(int page)
     {
-        if (page == 1)
+        if (page == 3)
         {
-            return new PageData(pageId2, 1)
-                    .update(new FilledButtonData(VIEW_ID.EMERGENCY.getId(), Color.WHITE))
-                    .update(new TextButtonData(VIEW_ID.PULSE.getId(), "Send Pulse"));
-        }
-        else if (page == 2)
-        {
+
             return new PageData(pageId1, 0)
                     .update(new TextBlockData(VIEW_ID.START_TITLE.getId(), "swipe to"))
                     .update(new TextBlockData(VIEW_ID.START_MESSAGE.getId(), "Start"));
         }
-        else if(page==3)
+        else if (page == 2)
         {
-            return new PageData(pageId3, 0)
-                    .update(new TextBlockData(VIEW_ID.START_TITLE.getId(), "Calling"))
-                    .update(new TextBlockData(VIEW_ID.START_MESSAGE.getId(), "Police"));
+            return new PageData(pageId2, 1)
+                    .update(new FilledButtonData(VIEW_ID.EMERGENCY.getId(), Color.WHITE))
+                    .update(new FilledButtonData(VIEW_ID.PULSE.getId(), Color.WHITE));
+        }
+        else if(page==1)
+        {
+            return new PageData(pageId3, 2)
+                    .update(new FilledButtonData(VIEW_ID.BIG_EMERGENCY.getId(), Color.WHITE));
         }
 
         return null;
