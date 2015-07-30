@@ -80,6 +80,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         mLocalReceiver = getLocalBroadcastReceiver();
 
         setUpUI();
+
         mBandManager = new BandManager(this);
 
                 // Get current user data from Parse.com
@@ -101,7 +102,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
 
         buildGoogleApiClient();
-        userSignIn();
+       // userSignIn();
 
     }
 
